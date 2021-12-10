@@ -2,13 +2,8 @@ import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { Component, OnInit, Query, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { BlogService } from 'src/app/shared/blog.service';
 import { AuthService } from 'src/app/shared/auth.service';
-import { Subject } from 'rxjs';
-import { MultiSelect, CheckBoxSelection, FilteringEventArgs } from '@syncfusion/ej2-dropdowns';
-import { query } from '@angular/animations';
-// import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 @Component({
   selector: 'app-add-blog',
   templateUrl: './add-blog.component.html',
@@ -23,6 +18,7 @@ export class AddBlogComponent implements OnInit {
   dropdownSettings = {};
   public Editor = ClassicEditor;
   @ViewChild('f') loginForm:NgForm;
+
   constructor(private router:Router,
     private blogService:BlogService,private auth:AuthService) { }
 
@@ -46,26 +42,14 @@ export class AddBlogComponent implements OnInit {
     };
     this.author=(this.auth.loginUserNameOrEmail);
     console.log(this.author)
-
-
   }
 
-  
-
-  onSelectAll(items: any) {
-    console.log(items);
-  }
-
-  onItemSelect(item: any) {
-    console.log(item);
-  }
   onNewBlogSubmit(){
     console.log(this.loginForm.value);
     let id=this.blogService.getLatestIndexOfBlog();
-    let date=this.loginForm.value.date;
+    let date=new Date();
     let description=this.loginForm.value.description;
-    console.log(this.loginForm.value.language);
-    //return;
+    console.log(date);
     let a=this.blogService.addBlog({
       ...this.loginForm.value,
       description:description,
@@ -73,12 +57,6 @@ export class AddBlogComponent implements OnInit {
       date: date,
       publishBy: this.author,
     });
-    // this.blo
-    console.log(a)
-    console.log(description)
-    console.log(this.blogService.getBlogs())
     this.router.navigate(['../']);
-
-
   }
 }

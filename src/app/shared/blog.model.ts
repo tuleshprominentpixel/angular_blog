@@ -6,7 +6,6 @@ export class Blog {
     author: string;
     language: { ['item_id']: number; ['item_text']: string }[];
     date?: Date;
-    // publishBy?: number;
     constructor(
         id: number,
         title: string,
@@ -14,8 +13,7 @@ export class Blog {
         imageUrl: string,
         author: string,
         language: { ['item_id']: number; ['item_text']: string }[],
-        date: Date,
-        // publishBy: number = null
+        date?: Date,
       ) {
         this.id = id;
         this.title = title;
@@ -24,6 +22,5 @@ export class Blog {
         this.language = language;
         this.author = author;
         this.date = date;
-        // this.publishBy = publishBy;
       }
 }

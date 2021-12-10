@@ -1,64 +1,103 @@
-import { Route } from '@angular/compiler/src/core';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnChanges, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/auth.service';
-import { Blog } from 'src/app/shared/blog.model';
 import { BlogService } from 'src/app/shared/blog.service';
+
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { EditblogsComponent } from '../editblogs/editblogs.component';
 
 @Component({
   selector: 'app-myblog',
   templateUrl: './myblog.component.html',
-  styleUrls: ['./myblog.component.css']
+  styleUrls: ['./myblog.component.css'],
 })
 export class MyblogComponent implements OnInit {
-  myblognumber:boolean = false;
   myblog;
-  blogone;
-  a;
-  b;
-  c;
+  authorname;
   i;
-  myfinalblog:Blog[]=[];
-  constructor(private blogService: BlogService,
+  myfinalblog = [];
+
+  modalOpen = false;
+  dataPassToChild: any = '12';
+
+  constructor(
+    private blogService: BlogService,
     private authService: AuthService,
-    private router: Router,private route :ActivatedRoute
-    ) { }
+    private router: Router,
+    private route: ActivatedRoute,
+    private modalService: NgbModal
+  ) {
+    this.authorname = this.authService.loginUserNameOrEmail;
+    this.myblog = this.blogService.getauther(this.authorname);
+    for (
+      this.i = 0;
+      this.i < this.blogService.getLatestIndexOfBlog();
+      this.i++
+    ) {
+      if (this.authorname == this.myblog[this.i].author) {
+        this.myfinalblog.push(this.blogService.getblogbyid(this.i));
+      }
+    }
+  }
 
   ngOnInit(): void {
-    this.blogone = this.authService.loginUserNameOrEmail;
-    // this.blogone="author2222"
-    this.myblog=this.blogService.getauther(this.blogone);
-    this.a=this.myblog[0].author;
-    for(this.i=0;this.i<(this.blogService.getLatestIndexOfBlog());this.i++){
-      this.a=this.myblog[this.i].author;
-      if(this.blogone==this.myblog[this.i].author)
-      { 
-        this.b=this.myblog[this.i].id;
-        console.log(this.myblog[this.i].id);
-        this.myblognumber=true;
-        this.myfinalblog.push(this.blogService.getBlog(this.b));
+    this.blogService.newBlog.subscribe(() => {
+      this.myfinalblog = [];
+
+      this.authorname = this.authService.loginUserNameOrEmail;
+      this.myblog = this.blogService.getauther(this.authorname);
+      for (
+        this.i = 0;
+        this.i < this.blogService.getLatestIndexOfBlog();
+        this.i++
+      ) {
+        if (this.authorname == this.myblog[this.i].author) {
+          this.myfinalblog.push(this.blogService.getblogbyid(this.i));
+        }
       }
-      this.c=this.blogService.getBlog(this.b);
-      
-      console.log(this.c);
-    }
-    console.log(this.myfinalblog);
-
-    
+    });
   }
 
-  onDetail(id){
-    this.router.navigate(['../blog/'+id],{relativeTo: this.route});
-  }
-  onEdit(id){
-    this.router.navigate(['../blog/'+id+'/edit'],{relativeTo: this.route});
+  onSelectAll(items: any) {
+    console.log(items);
   }
 
-  onDelete(id){
-    console.log(id);
+  onDetail(id, title) {
+    this.router.navigate(
+      ['../blog/' + this.blogService.getBlogDetails(id, title)],
+      {
+        relativeTo: this.route,
+      }
+    );
+  }
+  onEdit(id) {
+    this.router.navigate(['../blog/' + id + '/edit'], {
+      relativeTo: this.route,
+    });
+  }
+  toggleModal(id: number) {
+    this.modalOpen = !this.modalOpen;
+  }
+
+  onDelete(id) {
     this.blogService.deleteBlog(id);
-    // this.router.navigate(['../this.myblog'],{relativeTo: this.route});
   }
+  openModalDialogCustomClass(content, id) {
+    const modalRef = this.modalService.open(EditblogsComponent, {
+      size: 'lg',
+      backdrop: false,
+    });
 
+    (<EditblogsComponent>modalRef.componentInstance).dataToTakeAsInput =
+      content;
 
+    modalRef.result
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((result) => {
+        console.log(result);
+      });
+    this.blogService.editBlogModal = id;
+  }
 }
