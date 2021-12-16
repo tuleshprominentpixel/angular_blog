@@ -1,0 +1,45 @@
+<div style="background-color: #17a2b8; padding-bottom: 50px;">
+  <div class="container">
+    <div class="table-responsive"> 
+    <table class="table table-bordered table-dark" style="border-collapse: collapse "
+      *ngIf="myFinalBlogs.length>0  else elseBlock">
+      <thead>
+        <tr>
+          <th scope="col">No</th>
+          <th scope="col">Image</th>
+          <th scope="col">Title</th>
+          <th scope="col">Description</th>
+          <th scope="col">Edit</th>
+          <th scope="col">Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr *ngFor="let myFinalBlogOne of myFinalBlogs;let index = index">
+          <th scope="row">{{index+1}}</th>
+          <td (click)="onDetail(myFinalBlogOne.id)"> 
+            <img class="rounded-top" src="{{myFinalBlogOne.imageUrl}}"
+              alt="{{myFinalBlogOne.title}}" style="width:350px; height:280px; cursor: pointer;">
+          </td>
+          <td (click)="onDetail(myFinalBlogOne.id)" style="cursor: pointer;">{{myFinalBlogOne.title}}</td>
+          <td>
+            <p class="display-30" [innerHTML]="myFinalBlogOne.description" (click)="onDetail(myFinalBlogOne.id)"
+              style="cursor: pointer;"></p>
+          </td>
+          <td>
+            <button class="btn btn-outline-primary mb-2 mr-2" (click)="onOpenEditModal(myFinalBlogOne.id)">Edit
+              Blog</button>
+          </td>
+          <td>
+            <button type="button" class="btn btn-danger" (click)="onDelete(myFinalBlogOne.id)">
+              Delete
+            </button>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+    </div>
+    <ng-template #elseBlock>No one post created by you.</ng-template>
+  </div>
+</div>
